@@ -1,55 +1,92 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Bubble Tea Finder 🧋</title>
+/* 🌸 Global Styles */
+body {
+  font-family: "Raleway", sans-serif;
+  background: #fff0f6;
+  margin: 0;
+  padding: 0;
+  color: #3d2a2e;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  text-align: center;
+}
 
-  <!-- Classy fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Raleway:wght@300;500&display=swap" rel="stylesheet">
+/* 🎀 Headings */
+h1, h2, h3 {
+  font-family: "Playfair Display", serif;
+  font-weight: 600;
+  color: #b83280;
+  margin: 0.5em 0;
+}
 
-  <style>
-    body {
-      display: flex;
-      font-family: "Raleway", sans-serif;
-      background: #fff0f6;
-      margin: 0;
-      padding: 0;
-      color: #3d2a2e;
-    }
-    h1, h2, h3 {
-      font-family: "Playfair Display", serif;
-      font-weight: 600;
-      color: #b83280;
-    }
-    .cards {
-      flex: 1;
-      padding: 1em;
-    }
-    #map {
-      flex: 1;
-      height: 100vh;
-    }
-    .location-card {
-      background: #fff;
-      border-radius: 12px;
-      padding: 1.2em;
-      margin-bottom: 1em;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-      text-align: center;
-      transition: transform 0.2s ease;
-    }
-    .location-card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 6px 16px rgba(0,0,0,0.12);
-    }
-    .location-card img {
-      max-width: 100%;
-      border-radius: 8px;
-    }
-  </style>
-</head>
-<body>
-  <div class="cards"></div>
-  <div id="map"></div>
-</body>
-</html>
+/* ✨ Paragraphs */
+p {
+  color: #5c4b52;
+  line-height: 1.6;
+  font-size: 1.05em;
+}
+
+/* 🍡 Controls (buttons) */
+.controls {
+  margin: 1em auto;
+}
+button {
+  font-family: "Raleway", sans-serif;
+  font-weight: 600;
+  background: linear-gradient(135deg, #ff85c1, #e75480);
+  color: white;
+  border: none;
+  border-radius: 30px;
+  padding: 0.6em 1.5em;
+  margin: 0.3em;
+  font-size: 1em;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  transition: all 0.3s ease;
+}
+button:hover {
+  background: linear-gradient(135deg, #e75480, #b83280);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.15);
+}
+
+/* 📌 Content Layout */
+.content {
+  display: flex;
+  flex: 1;
+  height: calc(100vh - 180px);
+}
+
+/* 🃏 Cards */
+.cards {
+  flex: 1;
+  padding: 1em;
+  overflow-y: auto;
+}
+.location-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 1.5em 1em;
+  margin: 1em auto;
+  max-width: 350px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  text-align: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.location-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+}
+.location-card img {
+  max-width: 100%;
+  border-radius: 12px;
+  margin-bottom: 0.8em;
+}
+
+/* 🗺️ Map */
+#map {
+  flex: 1;
+  height: 100%;
+  min-height: 400px;
+  border-left: 2px solid #f3d1e0;
+}
