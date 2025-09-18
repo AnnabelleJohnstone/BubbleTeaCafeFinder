@@ -27,9 +27,16 @@
     <div id="map"></div>
   </div>
 
-  <!-- Scripts -->
+    <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/hammerjs@2.0.8/hammer.min.js"></script>
+
+  <!-- Load Google Maps first -->
+  <script async defer 
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAd3slDb-7yHMXQPfmVMRWtZhlBc2YZ0Kg&libraries=places">
+  </script>
+
+  <!-- Then your logic -->
   <script src="script.js"></script>
-  <script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAd3slDb-7yHMXQPfmVMRWtZhlBc2YZ0Kg&libraries=places"></script>
+
 </body>
 </html>
