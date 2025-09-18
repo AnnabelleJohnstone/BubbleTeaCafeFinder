@@ -1,84 +1,55 @@
-body {
-  background-color: #fff0f6; /* soft pink */
-  font-family: "Savate", sans-serif;
-  text-align: center;
-  padding: 1rem;
-  margin: 0;
-  color: #6c3b6f;
-}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Bubble Tea Finder 🧋</title>
 
-/* ✨ Buttons styled like bubble tea pearls */
-button {
-  font-family: "Savate", sans-serif;
-  font-size: 18px;
-  background: linear-gradient(135deg, #ff85c1, #d63384);
-  color: white;
-  border-radius: 999px; /* pill shape */
-  padding: 0.6em 1.4em;
-  margin: 0.4em;
-  border: none;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 8px rgba(214, 51, 132, 0.2);
-}
+  <!-- Classy fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Raleway:wght@300;500&display=swap" rel="stylesheet">
 
-button:hover {
-  background: linear-gradient(135deg, #ffb6d9, #ff85c1);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(214, 51, 132, 0.3);
-}
-
-/* ✨ Card stack */
-.cards {
-  position: relative;
-  width: 100%;
-  max-width: 320px;
-  margin: 2rem auto;
-  height: 420px;
-}
-
-.swipe-wrapper {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  transition: transform 0.3s ease, opacity 0.3s ease;
-}
-
-/* ✨ Individual location card */
-.location-card {
-  width: 100%;
-  background: white;
-  border-radius: 16px;
-  overflow: hidden;
-  text-align: center;
-  padding: 1rem;
-  margin-bottom: 1vh;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s ease;
-}
-
-.location-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
-}
-
-.location-card img {
-  width: 100%;
-  height: 160px;
-  object-fit: cover;
-  border-radius: 12px;
-  margin-bottom: 0.6em;
-}
-
-/* ✨ Text inside cards */
-.location-card h3 {
-  color: #d63384;
-  font-size: 1.2em;
-  margin: 0.3em 0;
-}
-
-.location-card p {
-  margin: 0.2em 0;
-  color: #555;
-}
+  <style>
+    body {
+      display: flex;
+      font-family: "Raleway", sans-serif;
+      background: #fff0f6;
+      margin: 0;
+      padding: 0;
+      color: #3d2a2e;
+    }
+    h1, h2, h3 {
+      font-family: "Playfair Display", serif;
+      font-weight: 600;
+      color: #b83280;
+    }
+    .cards {
+      flex: 1;
+      padding: 1em;
+    }
+    #map {
+      flex: 1;
+      height: 100vh;
+    }
+    .location-card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 1.2em;
+      margin-bottom: 1em;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      text-align: center;
+      transition: transform 0.2s ease;
+    }
+    .location-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+    }
+    .location-card img {
+      max-width: 100%;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="cards"></div>
+  <div id="map"></div>
+</body>
+</html>
