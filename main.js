@@ -38,7 +38,7 @@
   <div id="map"></div>
 
   <script src="https://cdn.jsdelivr.net/npm/hammerjs@2.0.8/hammer.min.js"></script>
-  <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_API_KEY&libraries=places"></script>
+  <script src="https://maps.googleapis.com/maps/api/js?AIzaSyAd3slDb-7yHMXQPfmVMRWtZhlBc2YZ0Kg"></script>
   <script>
   const apiKey = "YOUR_GOOGLE_API_KEY"; // replace with your key
   const useProxy = true;
