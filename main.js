@@ -1,57 +1,62 @@
-// ✅ Your restricted API key
+// ✅ Your restricted API key (safe if properly restricted)
 const apiKey = "AIzaSyAd3slDb-7yHMXQPfmVMRWtZhlBc2YZ0Kg";
 
-// ✅ Proxy (needed because Places API JSON endpoint isn’t CORS enabled)
-const useProxy = true;
-const proxy = "https://cors-anywhere.herokuapp.com/";
+let map;
+let service;
+let infowindow;
 
-// ✅ Get user location (with caching)
+// ✅ Get user location
 function getLocation() {
-  const cache = JSON.parse(localStorage.getItem("cachedLocation") || "{}");
-  const now = Date.now();
-
-  if (cache.timestamp && now - cache.timestamp < 10 * 60 * 1000) {
-    console.log("📍 Using cached location:", cache);
-    useLocation(cache.lat, cache.lng);
-  } else {
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        const lat = pos.coords.latitude;
-        const lng = pos.coords.longitude;
-
-        localStorage.setItem(
-          "cachedLocation",
-          JSON.stringify({ lat, lng, timestamp: now })
-        );
-
-        useLocation(lat, lng);
-      },
-      () => alert("Location access denied or unavailable.")
-    );
-  }
+  navigator.geolocation.getCurrentPosition(
+    (pos) => {
+      const lat = pos.coords.latitude;
+      const lng = pos.coords.longitude;
+      initMap(lat, lng);
+      searchNearby(lat, lng);
+    },
+    () => alert("Location access denied or unavailable.")
+  );
 }
 
-// ✅ Fetch nearby cafes
-async function useLocation(lat, lng) {
-  const endpoint = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat},${lng}&radius=1500&type=cafe&key=${apiKey}`;
-  const url = useProxy ? proxy + endpoint : endpoint;
+// ✅ Initialize Google Map
+function initMap(lat, lng) {
+  const center = new google.maps.LatLng(lat, lng);
+  infowindow = new google.maps.InfoWindow();
 
-  try {
-    const response = await fetch(url);
-    const data = await response.json();
+  map = new google.maps.Map(document.getElementById("map"), {
+    center,
+    zoom: 15,
+  });
 
-    if (data.results && data.results.length > 0) {
-      displayCards(data.results);
+  // Marker for your location
+  new google.maps.Marker({
+    position: center,
+    map,
+    title: "You are here 🧋",
+  });
+}
+
+// ✅ Search for nearby bubble tea cafes
+function searchNearby(lat, lng) {
+  const request = {
+    location: new google.maps.LatLng(lat, lng),
+    radius: 1500,
+    keyword: "bubble tea", // more specific than just "cafe"
+    type: ["cafe"],
+  };
+
+  service = new google.maps.places.PlacesService(map);
+  service.nearbySearch(request, (results, status) => {
+    if (status === google.maps.places.PlacesServiceStatus.OK) {
+      displayCards(results);
+      addMarkers(results);
     } else {
-      alert("No cafes found.");
+      alert("No bubble tea spots found 😭🧋");
     }
-  } catch (e) {
-    console.error("❌ Error fetching Places API:", e);
-    alert("Error fetching cafes.");
-  }
+  });
 }
 
-// ✅ Display swipeable cards
+// ✅ Show swipeable cards
 function displayCards(cafes) {
   const container = document.querySelector(".cards");
   container.innerHTML = "";
@@ -61,16 +66,8 @@ function displayCards(cafes) {
     wrapper.className = "swipe-wrapper";
     wrapper.style.zIndex = 200 - i;
 
-    const imgUrl = cafe.photos?.[0]?.photo_reference
-      ? `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${cafe.photos[0].photo_reference}&key=${apiKey}`
-      : "https://via.placeholder.com/250x150?text=No+Image";
-
-    const cafeData = {
-      name: cafe.name,
-      place_id: cafe.place_id,
-      photo: imgUrl,
-      rating: cafe.rating || "N/A",
-    };
+    const imgUrl = cafe.photos?.[0]?.getUrl({ maxWidth: 400 }) ||
+      "https://via.placeholder.com/250x150?text=No+Image";
 
     const card = document.createElement("div");
     card.className = "location-card";
@@ -93,7 +90,12 @@ function displayCards(cafes) {
     });
 
     hammertime.on("swiperight", () => {
-      saveCafe(cafeData);
+      saveCafe({
+        name: cafe.name,
+        place_id: cafe.place_id,
+        photo: imgUrl,
+        rating: cafe.rating || "N/A",
+      });
       wrapper.style.transform = "translateX(150%) rotate(15deg)";
       wrapper.style.opacity = 0;
       setTimeout(() => wrapper.remove(), 100);
@@ -101,7 +103,23 @@ function displayCards(cafes) {
   });
 }
 
-// ✅ Save cafe to localStorage
+// ✅ Add markers to the map
+function addMarkers(cafes) {
+  cafes.forEach((cafe) => {
+    const marker = new google.maps.Marker({
+      position: cafe.geometry.location,
+      map,
+      title: cafe.name,
+    });
+
+    google.maps.event.addListener(marker, "click", () => {
+      infowindow.setContent(`<strong>${cafe.name}</strong><br>⭐️ ${cafe.rating || "N/A"}`);
+      infowindow.open(map, marker);
+    });
+  });
+}
+
+// ✅ Save cafe
 function saveCafe(cafe) {
   let saved = JSON.parse(localStorage.getItem("savedCafes") || "[]");
 
