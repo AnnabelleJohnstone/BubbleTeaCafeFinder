@@ -1,19 +1,17 @@
-const apiKey = "AIzaSyAd3slDb-7yHMXQPfmVMRWtZhlBc2YZ0Kg"; // restricted key
-const useProxy = true;
-const proxy = "https://cors-anywhere.herokuapp.com/";
-
 let map;
 let markers = [];
 
-// Initialize Google Map
+// Initialize Leaflet map (free alternative to Google Maps)
 function initMap(lat, lng) {
-  map = new google.maps.Map(document.getElementById("map"), {
-    center: { lat, lng },
-    zoom: 14,
-  });
+  map = L.map('map').setView([lat, lng], 14);
+  
+  // Add OpenStreetMap tiles (free!)
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap contributors'
+  }).addTo(map);
 }
 
-// Get user location (with 10 min cache)
+// Get user location
 function getLocation() {
   const cache = JSON.parse(localStorage.getItem("cachedLocation") || "{}");
   const now = Date.now();
@@ -33,26 +31,46 @@ function getLocation() {
   }
 }
 
-// Fetch cafes (bubble tea / cafe spots)
+// Fetch cafes using Overpass API (completely free!)
 async function useLocation(lat, lng) {
-  initMap(lat, lng); // Initialize map with user location
+  initMap(lat, lng);
   
-  const endpoint = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat},${lng}&radius=1500&type=cafe&key=${apiKey}`;
-  const url = useProxy ? proxy + endpoint : endpoint;
-
+  // Search for cafes within 1.5km radius
+  const radius = 1500;
+  const query = `
+    [out:json];
+    (
+      node["amenity"="cafe"](around:${radius},${lat},${lng});
+      way["amenity"="cafe"](around:${radius},${lat},${lng});
+    );
+    out body;
+  `;
+  
   try {
-    const res = await fetch(url);
-    const data = await res.json();
-
-    if (data.results && data.results.length > 0) {
-      displayCards(data.results);
-      addMarkers(data.results);
+    const response = await fetch('https://overpass-api.de/api/interpreter', {
+      method: 'POST',
+      body: query
+    });
+    
+    const data = await response.json();
+    const cafes = data.elements.map(cafe => ({
+      name: cafe.tags?.name || 'Unnamed Cafe',
+      lat: cafe.lat || cafe.center?.lat,
+      lng: cafe.lon || cafe.center?.lon,
+      cuisine: cafe.tags?.cuisine || '',
+      opening_hours: cafe.tags?.opening_hours || 'Hours not available',
+      id: cafe.id
+    })).filter(cafe => cafe.lat && cafe.lng);
+    
+    if (cafes.length > 0) {
+      displayCards(cafes);
+      addMarkers(cafes);
     } else {
-      alert("No cafes found.");
+      alert("No cafes found nearby 😢");
     }
-  } catch (e) {
-    console.error("Error fetching Places API:", e);
-    alert("Error fetching bubble tea cafes.");
+  } catch (error) {
+    console.error("Error fetching cafes:", error);
+    alert("Error finding cafes. Please try again.");
   }
 }
 
@@ -66,24 +84,25 @@ function displayCards(cafes) {
     wrapper.className = 'swipe-wrapper';
     wrapper.style.zIndex = 200 - i;
 
-    const card = document.createElement('div'); // FIXED: Create card element
+    const card = document.createElement('div');
     card.className = 'location-card';
 
-    const imgUrl = cafe.photos?.[0]?.photo_reference
-      ? `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${cafe.photos[0].photo_reference}&key=${apiKey}`
-      : "https://via.placeholder.com/250x150?text=No+Image";
+    // Use a placeholder image (or you could use Unsplash API for free images)
+    const imgUrl = `https://source.unsplash.com/400x300/?cafe,${encodeURIComponent(cafe.cuisine || 'coffee')}`;
 
     const cafeData = {
       name: cafe.name,
-      place_id: cafe.place_id,
+      id: cafe.id,
       photo: imgUrl,
-      rating: cafe.rating || "N/A",
+      hours: cafe.opening_hours,
+      lat: cafe.lat,
+      lng: cafe.lng
     };
 
     card.innerHTML = `
       <img src="${imgUrl}" alt="${cafe.name}" />
       <h3>${cafe.name}</h3>
-      <p>⭐️ Rating: ${cafe.rating || "N/A"}</p>
+      <p>🕐 ${cafe.opening_hours}</p>
       <p><small>Swipe right to save 💖</small></p>
     `;
 
@@ -105,27 +124,24 @@ function displayCards(cafes) {
   });
 }
 
-// Add markers on the map
+// Add markers to map
 function addMarkers(cafes) {
-  markers.forEach(m => m.setMap(null));
+  markers.forEach(m => map.removeLayer(m));
   markers = [];
 
   cafes.forEach(cafe => {
-    if (!cafe.geometry) return;
-    const marker = new google.maps.Marker({
-      position: cafe.geometry.location,
-      map: map,
-      title: cafe.name,
-    });
+    const marker = L.marker([cafe.lat, cafe.lng])
+      .addTo(map)
+      .bindPopup(`<b>${cafe.name}</b><br>${cafe.opening_hours}`);
     markers.push(marker);
   });
 }
 
-// Save cafes locally
+// Save cafe
 function saveCafe(cafe) {
   let saved = JSON.parse(localStorage.getItem("savedCafes") || "[]");
 
-  if (!saved.find(c => c.place_id === cafe.place_id)) {
+  if (!saved.find(c => c.id === cafe.id)) {
     saved.push(cafe);
     localStorage.setItem("savedCafes", JSON.stringify(saved));
     alert(`${cafe.name} saved to favorites 🧋💕`);
@@ -152,11 +168,11 @@ function showSaved() {
     card.innerHTML = `
       <img src="${cafe.photo}" alt="${cafe.name}" />
       <h3>${cafe.name}</h3>
-      <p>🧋 Rating: ${cafe.rating}</p>
+      <p>🕐 ${cafe.hours}</p>
     `;
     container.appendChild(card);
   });
 }
 
-// Initialize on page load
+// Initialize
 getLocation();
