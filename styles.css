@@ -90,3 +90,32 @@ button:hover {
   min-height: 400px;
   border-left: 2px solid #f3d1e0;
 }
+
+.location-card {
+  background: white;
+  border-radius: 15px;
+  padding: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  width: 300px;
+  text-align: center;
+  cursor: pointer; /* Show it's clickable */
+  transition: transform 0.2s;
+}
+
+.location-card:hover {
+  transform: scale(1.02);
+}
+
+.swipe-wrapper.swiping .location-card {
+  cursor: grabbing;
+}
+
+/* Leaflet popup custom styles */
+.leaflet-popup-content-wrapper {
+  border-radius: 15px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+}
+
+.leaflet-popup-content {
+  margin: 0;
+}
