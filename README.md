@@ -7,17 +7,17 @@ The app displays swipeable cards with nearby cafes and shows their location on a
 
 ---
 
-## 🌟 Features
+##  Features
 
-- 📍 Detects your current location (with geolocation API).  
-- 🧋 Displays nearby cafes in a stack of swipeable cards.  
-- 🍡 Swipe right to save a cafe, swipe left to dismiss.  
-- 🗺️ Interactive Google Map showing cafe markers side-by-side with the cards.  
-- 💾 Saved cafes stored locally in your browser (via `localStorage`).  
+-  Detects your current location (with geolocation API).  
+-  Displays nearby cafes in a stack of swipeable cards.  
+-  Swipe right to save a cafe, swipe left to dismiss.  
+-  Interactive Google Map showing cafe markers side-by-side with the cards.  
+-  Saved cafes stored locally in your browser (via `localStorage`).  
 
 ---
 
-## 📂 How It Works
+##  How It Works
 
 - **Cards Section**  
   Each card shows the cafe name, photo, rating 🧋, and a cute swipe instruction 🍡.  
@@ -31,7 +31,7 @@ The app displays swipeable cards with nearby cafes and shows their location on a
 
 ---
 
-## 🛠️ Tech Stack
+##  Tech Stack
 
 - **HTML / CSS / JavaScript** — Core app.  
 - **Google Maps JavaScript API** — Displays map and markers.  
@@ -41,7 +41,7 @@ The app displays swipeable cards with nearby cafes and shows their location on a
 
 ---
 
-## 🚀 Getting Started
+##  Getting Started
 
 1. Clone this repository:
 
