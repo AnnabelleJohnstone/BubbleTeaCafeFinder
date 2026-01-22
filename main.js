@@ -200,7 +200,7 @@ function displayCards(cafes) {
       <img src="${imgUrl}" alt="${cafe.name}" onerror="this.src='https://via.placeholder.com/400x300?text=Bubble+Tea'" />
       <h3>${cafe.name}</h3>
       <p>🕐 ${cafe.opening_hours}</p>
-      <p><small>👆 Click to see on map | Swipe right to save 💖</small></p>
+      <p><small> Swipe right to save 💖</small></p>
     `;
 
     // Click to show location on map
@@ -315,7 +315,9 @@ function saveCafe(cafe) {
   }
 }
 
-// Show saved cafes
+
+
+// Show saved cafes with swipe to remove
 function showSaved() {
   const container = document.querySelector(".cards");
   container.innerHTML = "";
@@ -327,21 +329,56 @@ function showSaved() {
     return;
   }
 
-  saved.forEach(cafe => {
+  saved.forEach((cafe) => {
+    const wrapper = document.createElement("div");
+    wrapper.className = "swipe-wrapper";
+    wrapper.style.position = "relative";
+    
     const card = document.createElement("div");
-    card.className = "location-card";
+    card.className = "location-card saved-card";
     card.innerHTML = `
+      <button onclick="removeCafe('${cafe.id}')" style="position: absolute; top: 10px; right: 10px; background: #ff4444; color: white; border: none; padding: 8px 12px; border-radius: 50%; cursor: pointer; font-size: 16px; z-index: 10; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
+        ✕
+      </button>
       <img src="${cafe.photo}" alt="${cafe.name}" onerror="this.src='https://via.placeholder.com/400x300?text=Bubble+Tea'" />
       <h3>${cafe.name}</h3>
       <p>🕐 ${cafe.hours}</p>
+      <p><small>👆 Click to see on map | ← Swipe left to remove</small></p>
     `;
     
-    card.addEventListener('click', () => {
-      showOnMap(cafe);
+    card.addEventListener('click', (e) => {
+      if (e.target.tagName !== 'BUTTON') {
+        showOnMap(cafe);
+      }
     });
     
-    container.appendChild(card);
+    wrapper.appendChild(card);
+    container.appendChild(wrapper);
+    
+    // Add swipe gesture to remove
+    const hammertime = new Hammer(wrapper);
+    hammertime.on("swipeleft", () => {
+      wrapper.style.transform = "translateX(-150%) rotate(-15deg)";
+      wrapper.style.opacity = 0;
+      setTimeout(() => {
+        removeCafe(cafe.id);
+      }, 300);
+    });
   });
+}
+
+// Remove cafe from favorites
+function removeCafe(cafeId) {
+  let saved = JSON.parse(localStorage.getItem("savedCafes") || "[]");
+  
+  const cafe = saved.find(c => c.id === cafeId);
+  const cafeName = cafe ? cafe.name : "Cafe";
+  
+  saved = saved.filter(c => c.id !== cafeId);
+  localStorage.setItem("savedCafes", JSON.stringify(saved));
+  
+  alert(`${cafeName} removed from favorites 💔`);
+  showSaved();
 }
 
 console.log("Bubble Tea Finder ready! 🧋");
